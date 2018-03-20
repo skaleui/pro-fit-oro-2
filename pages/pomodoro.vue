@@ -1,0 +1,103 @@
+<template>
+  <div class="container">
+    <header-component></header-component>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div v-show="state !== 0" class="col-sm-12 col-md-6 col-lg-4">
+          <div class="jumbotron text-center">
+            <div class="container">
+              <img class="img-fluid rounded" :src="chosenWorkout.picture" :alt="chosenWorkout.name">
+              <h2>{{ chosenWorkout.name }}</h2>
+              <p class="lead">
+                {{ chosenWorkout.description}}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm12 col-md-6 col-lg-8">
+        <count-down-timer ref="countdowntimer" @finished="togglePomodoro" :time="time"></count-down-timer>
+      </div>
+    </div>
+    <footer-component></footer-component>
+  </div>
+</template>
+<script>
+import { HeaderComponent, FooterComponent } from '~/components/common'
+import CountDownTimer from '~/components/timer/CountDownTimer'
+import { mapGetters, mapActions } from 'vuex'
+
+const STATE = {
+  WORKING: 0,
+  SHORT_BREAK: 1,
+  LONG_BREAK: 2
+}
+
+export default {
+  data () {
+    return {
+      state: STATE.WORKING,
+      pomodoros: 0,
+      source: require('~/assets/images/pushups.png'),
+      chosenWorkout: {name: '', description: '', picture: ''}
+    }
+  },
+  computed: {
+    ...mapGetters({
+      config: 'getConfig',
+      totalPomodoros: 'getTotalPomodoros',
+      workouts: 'getWorkouts'
+    }),
+    time () {
+      let minutes
+
+      switch (this.state) {
+        case STATE.WORKING:
+          minutes = this.config.workingPomodoro
+          break
+        case STATE.SHORT_BREAK:
+          minutes = this.config.shortBreak
+          break
+        case STATE.LONG_BREAK:
+          minutes = this.config.longBreak
+          break
+        default:
+          minutes = this.config.workingPomodoro
+          break 
+        }
+
+        return minutes * 60
+      }      
+    },
+
+  components: {
+    HeaderComponent,
+    FooterComponent,
+    CountDownTimer
+  },
+  methods: {
+    ...mapActions(['updateTotalPomodoros']),
+    getRandomWorkout () {
+      return this.workouts[Math.floor(Math.random() * this.workouts.length)]
+    },
+    togglePomodoro () {
+      switch (this.state) {
+        case STATE.WORKING: 
+          this.pomodoros++
+          this.updateTotalPomodoros(this.totalPomodoros + 1)
+          this.state = this.pomodoros % this.config.pomodorosTillLongBreak === 0 ? STATE.LONG_BREAK : STATE.SHORT_BREAK
+          this.chosenWorkout = this.getRandomWorkout()
+          this.chosenWorkout.picture = this.chosenWorkout.pictures && this.chosenWorkout.pictures.length && this.chosenWorkout.pictures[0]
+          break
+        default: 
+          this.state = STATE.WORKING
+          break
+      }
+      this.$refs.countdowntimer.start()
+    }
+  }
+}
+</script>
+<style scoped lang="scss">
+  @import "../assets/styles/main";
+</style>
