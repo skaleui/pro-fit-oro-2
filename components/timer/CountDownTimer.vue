@@ -5,41 +5,30 @@
     </div>
     <div class="controls">
       <div class="btn-group" role="group">
-        <button @click="start" type="button" :class="{disabled: isStarted && !isPaused}" class="btn btn-link">Start</button>
-        <button @click="pause" type="button" :class="{disabled: !isStarted || isPaused}" class="btn btn-link">Pause</button>
-        <button @click="stop" type="button" :class="{disabled: !isStarted || isStopped}" class="btn btn-link">Stop</button>
+        <button @click="start" type="button" :class="{disabled: state === 0}" class="btn btn-link">Start</button>
+        <button @click="pause" type="button" :class="{disabled: state === 1 || state === 2}" class="btn btn-link">Pause</button>
+        <button @click="stop" type="button" :class="{disabled: state === 2}" class="btn btn-link">Stop</button>
       </div>
     </div>
   </div>
 </template>
 <script>
 import SvgCircleSector from './SvgCircleSector'
+import {leftPad, numberOfSecondsFromNow} from '@/utils/utils'
 
-const SECOND = 1000
-
-function leftPad (value) {
-  if (('' + value).length > 1) {
-    return value
-  }
-  return '0' + value
+const STATE = {
+  STARTED: 0,
+  PAUSED: 1,
+  STOPPED: 2
 }
 
-function numberOfSecondsFromNow (startTime) {
-  if (!startTime) {
-    return 0
-  }
-
-  return Math.floor((Date.now() - startTime) / SECOND)
-}
 export default {
   props: ['time'],
   data () {
     return {
       timestamp: this.time,
       interval: null,
-      isStarted: false,
-      isPaused: false,
-      isStopped: false,
+      state: STATE.STOPPED,
       startTime: null,
       pauseTime: null,
       pauseSeconds: 0
@@ -65,42 +54,29 @@ export default {
   methods: {
     _reset () {
       this.pauseTime = null
-      this.isStarted = true
-      this.isStopped = false
-      this.isPaused = false
+      this.state = STATE.STOPPED
 
       if (this.interval) {
         clearInterval(this.interval)
       }
     },
     start () {
-      if (this.isStarted === false) {
+      if (this.state !== STATE.STARTED && this.state !== STATE.PAUSED) {
         this.timestamp = this.time
         this.startTime = Date.now()
       }
       this.pauseSeconds += numberOfSecondsFromNow(this.pauseTime)
       this._reset()
+      this.state = STATE.STARTED
       this.interval = setInterval(() => {
         let secondsFromStart = numberOfSecondsFromNow(this.startTime)
 
         this.timestamp = this.time - secondsFromStart + this.pauseSeconds
         if (this.timestamp <= 0) {
+          this.stop()
           this.$emit('finished')
-          this.timestamp = this.time
         }
       }, 10)
-
-      this.isStarted = true
-      this.isPaused = false
-      this.isStopped = false
-
-      this.interval = setInterval(() => {
-        this.timestamp--
-        if (this.timestamp === 0) {
-          this.$emit('finished')
-          this.timestamp = this.time
-        }
-      }, 1000)
     },
     pause () {
       this.pauseTime = Date.now()
@@ -110,21 +86,24 @@ export default {
     stop () {
       clearInterval(this.interval)
       this.timestamp = this.time
-      this.isStarted = false
-      this.isPaused = false
-      this.isStopped = true
+      this.state = STATE.STOPPED
     }
   },
   watch: {
     time () {
-      this.isStarted = false
-      this.start()
+      this.timestamp = this.time
     }
   }
 }
 </script>
 <style scoped lang="scss">
-  button {
-    cursor: pointer;
+  @import "../../assets/styles/main";
+
+  .content {
+    @extend .center-content;
+    @include flex-direction(column);
+  }
+  .controls .btn {
+        cursor: pointer;
   }
 </style>

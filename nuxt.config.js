@@ -10,9 +10,19 @@ module.exports = {
       { hid: 'description', name: 'description', content: 'Nuxt.js project' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', type: 'stylesheet', lang: 'scss', href: '~/assets/styles/main.scss' }
+    ],
+    script: [
+      { type: 'text/javascript', src: '/jquery.js' },
+      { type: 'text/javascript', src: '/tether.js' },
+      { type: 'text/javascript', src: '/bootstrap.js' }
     ]
   },
+  css: [
+    '~static/bootstrap.css',
+    '~static/main.css'
+  ],
   /*
   ** Customize the progress bar color
   */

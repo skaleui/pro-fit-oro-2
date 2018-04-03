@@ -8,7 +8,9 @@ import { firebaseMutations } from 'vuexfire'
 Vue.use(Vuex)
 
 export default () => new Vuex.Store({
-  state, 
+  state: {
+    ...state
+  }, 
   getters,
   mutations: {
     ...mutations,

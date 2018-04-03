@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h2>Manage your workouts</h2>
+    <h2 class="title">Manage your workouts</h2>
     <div class="form-group">
       <input v-model="searchTerm" class="input" type="search" placeholder="Search for workouts">
     </div>
     <div class="card-columns">
-     <div data-toggle="modal" data-target="#workoutModal" v-for="workout in workoutsToDisplay" :key="workout" class="card" @click="onChosenWorkout(workout)">
+      <div data-toggle="modal" data-target="#workoutModal" v-for="workout in workoutsToDisplay" :key="workout" class="card" @click="onChosenWorkout(workout)">
         <img class="card-img-top img-fluid" :src="workout.pictures && workout.pictures.length && workout.pictures[0]" :alt="workout.name">
         <div class="card-block">
           <p class="card-text">{{ workout.name }}</p>
@@ -13,13 +13,13 @@
       </div>
     </div>
     <workout-component
-    :name="name"
-    :description="description"
-    :username="username"
-    :datecreated="datecreated"
-    :pictures="pictures"
-    :rate="rate">
-  </workout-component>
+      :name="name"
+      :description="description"
+      :username="username"
+      :datecreated="datecreated"
+      :pictures="pictures"
+      :rate="rate">
+    </workout-component>
   </div>
 </template>
 <script>
@@ -36,20 +36,17 @@
         description: '',
         pictures: [],
         rate: 0,
-        searchTerm: ''     
+        searchTerm: ''
       }
-    } ,
+    },
     computed: {
       ...mapState(['workouts']),
       workoutsToDisplay () {
-        console.log("workoutsToDisplay", this.workouts)
-        return this.workouts.filter( workout => {
-          console.log("name = ", name)
+        return this.workouts.filter(workout => {
           let name = workout.name.toLowerCase()
           let description = workout.description.toLowerCase()
           let username = workout.username.toLowerCase()
           let term = this.searchTerm.toLowerCase()
-          console.log("return = ", name, description, username);
           return name.indexOf(term) >= 0 || description.indexOf(term) >= 0 || username.indexOf(term) >= 0
         })
       }
@@ -70,19 +67,19 @@
   }
 </script>
 <style scoped lang="scss">
-  @import "../../assets/styles/main";
+  @import '../../assets/styles/main';
 
   .card-columns {
     @include media-breakpoint-only(lg) {
-      column-count:4;
+      column-count: 3;
     }
     @include media-breakpoint-only(xl) {
-      column-count:5;
+      column-count: 4;
     }
     p.card-text {
       overflow: hidden;
       white-space: nowrap;
-      text-overflow: ellipses;
+      text-overflow: ellipsis;
     }
   }
 </style>

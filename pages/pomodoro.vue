@@ -1,30 +1,30 @@
 <template>
-  <div class="container">
+  <div>
     <header-component></header-component>
-    <div class="container">
-      <div class="row justify-content-center">
+    <div class="container min-full-height">
+      <div class="main-content row">
         <div v-show="state !== 0" class="col-sm-12 col-md-6 col-lg-4">
           <div class="jumbotron text-center">
             <div class="container">
               <img class="img-fluid rounded" :src="chosenWorkout.picture" :alt="chosenWorkout.name">
               <h2>{{ chosenWorkout.name }}</h2>
               <p class="lead">
-                {{ chosenWorkout.description}}
+                {{ chosenWorkout.description }}
               </p>
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-sm12 col-md-6 col-lg-8">
+        <div class="countdown-holder col-sm-12" v-bind:class="[state !== 0 ? 'col-md-6 col-lg-8' : 'col-md-12']">
         <count-down-timer ref="countdowntimer" @finished="togglePomodoro" :time="time"></count-down-timer>
+        </div>
       </div>
     </div>
     <footer-component></footer-component>
   </div>
 </template>
 <script>
-import { HeaderComponent, FooterComponent } from '~/components/common'
 import CountDownTimer from '~/components/timer/CountDownTimer'
+import { HeaderComponent, FooterComponent } from '~/components/common'
 import { mapGetters, mapActions } from 'vuex'
 
 const STATE = {

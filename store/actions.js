@@ -36,7 +36,7 @@ export default {
 
     let updates = {}
 
-    updates['/workouts' + newWorkoutKey] = workout
+    updates['/workouts/' + newWorkoutKey] = workout
     updates['/user-workouts/' + state.user.uid + '/' + newWorkoutKey] = workout
 
     return firebaseapp.database().ref().update(updates)
@@ -174,6 +174,10 @@ export default {
    * @param {object} store
    */
   bindAuth ({commit, dispatch, state}) {
+    console.log("firebaseapp",firebaseapp);
+//    var tt = firebaseapp.auth();
+//    console.log("skale", tt);
+ /*   
     firebaseapp.auth().onAuthStateChanged(user => {
       commit('setUser', user)
       if (user && !user.isAnonymous) {
@@ -184,6 +188,7 @@ export default {
         dispatch('unbindFirebaseReferences')
       }
     })
+*/    
   },
   /**
    * Binds firebase configuration and statistics database references to the store's corresponding objects
